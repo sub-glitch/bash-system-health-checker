@@ -1,9 +1,6 @@
 #!/bin/bash
 
-echo "===================="
-echo "System Health Check"
-echo "===================="
-
+exec > >(tee -a health_check.log)
 
 USER_NAME=$(whoami)
 HOSTNAME=$(hostname)
@@ -12,6 +9,10 @@ KERNEL_VERSION=$(uname -r)
 DISK_USAGE=$(df -h / | awk 'NR > 1 { gsub("%","",$5); print $5 }')
 MEMORY_USAGE=$(free -m | awk ' $1 == "Mem:" {print int(($3 / $2) * 100)} ')
 EXIT_CODE=0
+
+echo "===================="
+echo "[$DATE] System Health Check"
+echo "===================="
 
 check_usage() {
     

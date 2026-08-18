@@ -20,6 +20,8 @@ A Bash script for monitoring basic Linux system health and reporting potential i
 - Exit status tracking
 - Reusable Bash functions
 - Disk and memory usage monitoring
+- Health-check logging
+- Timestamped health-check runs
 
 ## Requirements
 
@@ -158,13 +160,12 @@ A missing logs directory is treated as a failed health check, while the script c
 
 Planned improvements include:
 
-- Logging health-check results to a file
-- Adding timestamps to logs
 - Adding more system health checks
 - Improving error reporting
 - Adding configurable thresholds
 - Automating health checks with scheduled execution
 - Integrating the script into a CI/CD workflow
+-Containerize the health checker with Docker
 
 ## Author
 
