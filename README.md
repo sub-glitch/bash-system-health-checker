@@ -1,6 +1,6 @@
 # Bash System Health Checker
 
-A Bash script for monitoring basic Linux system health and reporting potential issues.
+A Bash-based system health checker that monitors basic Linux system health, reports potential issues, logs health-check results, and can be packaged and run as a Docker container.
 
 ## Current Checks
 
@@ -20,36 +20,37 @@ A Bash script for monitoring basic Linux system health and reporting potential i
 - Exit status tracking
 - Reusable Bash functions
 - Disk and memory usage monitoring
-- Health-check logging
 - Timestamped health-check runs
+- Health-check logging
+- Docker containerization
 
-## Requirements
+## Technologies
 
-- Linux or WSL2
 - Bash
-- `awk`
-- `df`
-- `free`
-- `ping`
+- Linux
+- AWK
+- Docker
+- Ubuntu
 
 ## Project Structure
 
 ```text
-01 health check/
+.
 ├── health_check.sh
-└── README.md
+├── Dockerfile
+├── README.md
+└── .gitignore
 ```
 
-## Usage
+## Running Locally
 
-First, make the script executable:
-
+Make the script executable:
 
 ```bash
 chmod +x health_check.sh
 ```
 
-Run the health checker by providing a logs directory:
+Run the health checker by providing a directory:
 
 ```bash
 ./health_check.sh <logs-directory>
@@ -61,115 +62,123 @@ Example:
 ./health_check.sh logs
 ```
 
-If the directory does not exist, the script reports the issue and continues with the remaining health checks.
+The script checks whether the provided directory exists and uses the exit status to indicate whether a health check passed or encountered an issue.
 
-If no directory is provided, the script exits immediately with a failure status.
+## Logging
 
-## Example Output
+Health-check output is automatically written to:
 
 ```text
-====================
-System Health Check
-====================
-
-Current User: uleko
-
-Hostname: SUB
-
-Date: Tue Aug 11 16:49:49 WAT 2026
-
-Kernel release: 6.6.87.2-microsoft-standard-WSL2
-
---- Network ---
-Internet connectivity successful
-
-Logs directory exists
-
---- Storage ---
-Disk usage: 1%
-Disk usage is okay
-
---- Memory ---
-Memory usage: 5%
-Memory usage is okay
+health_check.log
 ```
 
-## Exit Codes
+The log contains timestamped health-check runs while also displaying the output in the terminal.
 
-The script uses exit codes to communicate whether the health checks passed or failed.
+The generated log file is excluded from Git using `.gitignore`.
 
-| Exit Code | Meaning |
-|---|---|
-| `0` | All health checks passed |
-| `1` | One or more health checks failed |
+## Docker
 
-The script tracks failures using an `EXIT_CODE` variable and returns the final status after completing the checks.
+The health checker can also be packaged and executed as a Docker container.
 
-## Bash Concepts Practiced
-
-This project was built to practice several Bash and Linux concepts:
-
-- Variables
-- Command substitution
-- Positional parameters
-- `if`, `then`, `else`, and `fi`
-- Test operators such as `-z`, `-d`, and `-gt`
-- Exit codes
-- Functions
-- Function arguments
-- Global variables
-- Pipes
-- `awk`
-- `df`
-- `free`
-- `ping`
-- Output redirection
-- Basic Linux system administration
-
-## Example Failure
-
-Running the script without providing a directory:
+### Build the Docker Image
 
 ```bash
-./health_check.sh
+docker build -t health-checker .
 ```
 
-produces:
+### Run the Container
 
-```text
-Please provide a directory
+```bash
+docker run --rm health-checker
 ```
 
-and returns:
+The Docker image uses Ubuntu as its base image and installs the `iputils-ping` package required by the health checker.
 
-```text
-1
+## Dockerfile
+
+The Dockerfile:
+
+- Uses Ubuntu as the base image
+- Installs the required `ping` dependency
+- Copies the health-check script into the image
+- Makes the script executable
+- Defines the health checker as the default container command
+
+The main Docker instructions used are:
+
+```dockerfile
+FROM
+RUN
+COPY
+CMD
 ```
 
-A missing logs directory is treated as a failed health check, while the script continues checking the rest of the system.
+## What I Learned
 
-## Technologies
+This project was built progressively to practice Linux, Bash, and DevOps concepts.
 
-- Bash
-- Linux
-- WSL2
-- awk
-- Git
+### Version 1 — Bash System Health Checker
+
+- Bash variables
+- Command substitution
+- Conditional statements
+- Command-line arguments
+- AWK
+- Functions
+- Exit codes
+- Disk and memory monitoring
+- Network connectivity checks
+
+### Version 2 — Logging
+
+- Output redirection
+- `tee`
+- Log files
+- Timestamps
+- `.gitignore`
+- Separating generated files from source code
+
+### Version 3 — Docker
+
+- Docker images
+- Docker containers
+- Dockerfiles
+- Docker build context
+- `FROM`
+- `RUN`
+- `COPY`
+- `CMD`
+- Container dependencies
+- Docker and WSL2 integration
+- Running a Bash application inside a container
+
+## Version History
+
+### V1 — System Health Checker
+
+Created a Bash script capable of performing basic Linux system health checks and returning appropriate exit codes.
+
+### V2 — Logging
+
+Added timestamped logging while maintaining terminal output using `tee`.
+
+### V3 — Dockerization
+
+Created a Docker image containing the health checker and its required dependencies, allowing the script to run inside a Docker container.
 
 ## Future Improvements
 
-Planned improvements include:
-
-- Adding more system health checks
-- Improving error reporting
-- Adding configurable thresholds
-- Automating health checks with scheduled execution
-- Integrating the script into a CI/CD workflow
--Containerize the health checker with Docker
+- Add configurable health thresholds
+- Add CPU usage monitoring
+- Add more system health checks
+- Improve error reporting
+- Add persistent Docker volumes for logs
+- Automate health checks with scheduled execution
+- Add container health checks
+- Integrate the project into a CI/CD workflow
 
 ## Author
 
 **Uleko Samuel**
 
-Built as part of a hands-on Linux and DevOps learning journey.
-
+Built as part of my hands-on Linux and DevOps learning journey.
