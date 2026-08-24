@@ -2,6 +2,16 @@
 
 exec > >(tee -a health_check.log)
 
+if [ "$#" -ne 2 ]
+ then
+    echo "Invalid number of arguments. Please provide a directory path and a threshold value." 
+    EXIT_CODE=1
+    exit "$EXIT_CODE"
+fi
+
+DIRECTORY=$1
+THRESHOLD=$2
+
 USER_NAME=$(whoami)
 HOSTNAME=$(hostname)
 DATE=$(date)
@@ -14,16 +24,34 @@ echo "===================="
 echo "[$DATE] System Health Check"
 echo "===================="
 
+if [ ! -d "$DIRECTORY" ]
+then
+    echo "Directory does not exist. Please provide a valid directory path."
+    EXIT_CODE=1
+    exit "$EXIT_CODE"
+fi
+
+
+if [[ "$THRESHOLD" =~ ^[0-9]+$ ]] && [ "$THRESHOLD" -gt 0 ]
+then
+    echo "Threshold value: $THRESHOLD"
+ else
+    echo "Please provide a valid threshold greater than 0."
+    EXIT_CODE=1
+    exit "$EXIT_CODE"  
+fi
+
+
 check_usage() {
     
-    if [ "$1" -gt 80 ]
+    if [ "$1" -gt "$THRESHOLD" ]
     then
         echo "$2 usage: $1%"
-        echo "$2 usage is high" 
+        echo "$2 usage is HIGH" 
         EXIT_CODE=1
     else
         echo "$2 usage: $1%"
-        echo "$2 usage is okay"  
+        echo "$2 usage is OK"  
     fi        
 }
 
@@ -53,35 +81,18 @@ else
     EXIT_CODE=1
 fi        
 
-echo
-if [ -z "$1" ]
-then
-    echo "Please provide a directory"
-    exit 1
-else
-    LOG_DIR="$1"
-
-    if [ -d "$LOG_DIR" ]
-    then 
-    echo "Logs directory exists"
-    else
-    echo "Logs directory does not exist"
-    EXIT_CODE=1
-    fi
-
-fi  
 
 
 echo
 echo "--- Storage ---"
 
-check_usage $DISK_USAGE "Disk" 
+check_usage "$DISK_USAGE" "Disk" 
 
 
 echo
 echo "--- Memory ---"
 
-check_usage $MEMORY_USAGE "Memory"
+check_usage "$MEMORY_USAGE" "Memory"
 
 
 exit "$EXIT_CODE"

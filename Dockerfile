@@ -6,4 +6,6 @@ COPY health_check.sh /health_check.sh
 
 RUN chmod +x /health_check.sh
 
-CMD ["/health_check.sh", "/tmp"]
+ENTRYPOINT ["./health_check.sh"]
+
+CMD ["/tmp", "80"]

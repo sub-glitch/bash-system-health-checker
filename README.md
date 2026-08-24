@@ -16,13 +16,16 @@ A Bash-based system health checker that monitors basic Linux system health, repo
 ## Features
 
 - Command-line argument validation
+- Configurable health-check thresholds
 - Conditional health checks
 - Exit status tracking
 - Reusable Bash functions
 - Disk and memory usage monitoring
 - Timestamped health-check runs
 - Health-check logging
+- Input validation
 - Docker containerization
+- Docker argument support
 
 ## Technologies
 
@@ -50,19 +53,25 @@ Make the script executable:
 chmod +x health_check.sh
 ```
 
-Run the health checker by providing a directory:
+Run the health checker by providing a directory and a threshold:
 
 ```bash
-./health_check.sh <logs-directory>
+./health_check.sh <directory> <threshold>
 ```
 
 Example:
 
 ```bash
-./health_check.sh logs
+./health_check.sh /tmp 80
 ```
 
-The script checks whether the provided directory exists and uses the exit status to indicate whether a health check passed or encountered an issue.
+The first argument specifies the directory that should exist.
+
+The second argument specifies the percentage threshold used for disk and memory checks.
+
+If disk or memory usage exceeds the provided threshold, the check is marked as `HIGH`.
+
+The script also validates the number of arguments, the directory path, and the threshold value before running the health checks.
 
 ## Logging
 
@@ -76,6 +85,15 @@ The log contains timestamped health-check runs while also displaying the output 
 
 The generated log file is excluded from Git using `.gitignore`.
 
+## Exit Codes
+
+The script uses exit codes to indicate the result of the health check.
+
+```text
+0       All health checks passed
+Non-zero    One or more health checks failed
+```
+
 ## Docker
 
 The health checker can also be packaged and executed as a Docker container.
@@ -88,11 +106,33 @@ docker build -t health-checker .
 
 ### Run the Container
 
+The Dockerfile provides default values for the directory and threshold.
+
 ```bash
 docker run --rm health-checker
 ```
 
-The Docker image uses Ubuntu as its base image and installs the `iputils-ping` package required by the health checker.
+This runs the equivalent of:
+
+```bash
+/health_check.sh /tmp 80
+```
+
+### Run With a Custom Threshold
+
+The default threshold can be overridden when starting the container:
+
+```bash
+docker run --rm health-checker /tmp 50
+```
+
+This runs the equivalent of:
+
+```bash
+/health_check.sh /tmp 50
+```
+
+The container accepts the same directory and threshold arguments as the local Bash script.
 
 ## Dockerfile
 
@@ -102,7 +142,8 @@ The Dockerfile:
 - Installs the required `ping` dependency
 - Copies the health-check script into the image
 - Makes the script executable
-- Defines the health checker as the default container command
+- Uses `ENTRYPOINT` to define the health checker
+- Uses `CMD` to provide default arguments
 
 The main Docker instructions used are:
 
@@ -110,6 +151,7 @@ The main Docker instructions used are:
 FROM
 RUN
 COPY
+ENTRYPOINT
 CMD
 ```
 
@@ -152,6 +194,20 @@ This project was built progressively to practice Linux, Bash, and DevOps concept
 - Docker and WSL2 integration
 - Running a Bash application inside a container
 
+### Version 4 — Configurable Health Monitoring
+
+- Positional arguments
+- Argument count validation
+- Input validation
+- Regular expressions
+- Configurable thresholds
+- Error handling
+- Reusable health-check functions
+- Docker `ENTRYPOINT`
+- Docker `CMD`
+- Passing arguments into containers
+- Default and custom Docker arguments
+
 ## Version History
 
 ### V1 — System Health Checker
@@ -166,13 +222,19 @@ Added timestamped logging while maintaining terminal output using `tee`.
 
 Created a Docker image containing the health checker and its required dependencies, allowing the script to run inside a Docker container.
 
+### V4 — Configurable Health Monitoring
+
+Improved the health checker by adding configurable thresholds, argument validation, input validation, and improved error handling.
+
+Updated the Docker configuration to support default and custom arguments using `ENTRYPOINT` and `CMD`.
+
 ## Future Improvements
 
-- Add configurable health thresholds
 - Add CPU usage monitoring
 - Add more system health checks
 - Improve error reporting
 - Add persistent Docker volumes for logs
+- Add Docker Compose support
 - Automate health checks with scheduled execution
 - Add container health checks
 - Integrate the project into a CI/CD workflow
