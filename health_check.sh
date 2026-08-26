@@ -1,6 +1,6 @@
 #!/bin/bash
 
-exec > >(tee -a health_check.log)
+exec > >(tee -a /logs/health_check.log)
 
 if [ "$#" -ne 2 ]
  then

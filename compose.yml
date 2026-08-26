@@ -1,0 +1,6 @@
+services:
+  health-check:
+    build: .
+
+    volumes:
+      - "./logs/:/logs/"    

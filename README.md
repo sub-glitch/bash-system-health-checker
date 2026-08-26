@@ -41,8 +41,10 @@ A Bash-based system health checker that monitors basic Linux system health, repo
 .
 ├── health_check.sh
 ├── Dockerfile
+├── compose.yml
 ├── README.md
-└── .gitignore
+├── .gitignore
+└── logs/
 ```
 
 ## Running Locally
@@ -78,7 +80,7 @@ The script also validates the number of arguments, the directory path, and the t
 Health-check output is automatically written to:
 
 ```text
-health_check.log
+logs/health_check.log
 ```
 
 The log contains timestamped health-check runs while also displaying the output in the terminal.
@@ -133,6 +135,37 @@ This runs the equivalent of:
 ```
 
 The container accepts the same directory and threshold arguments as the local Bash script.
+
+## Docker Compose
+
+Docker Compose is used to define and run the health checker with its required configuration.
+
+### Start the Health Checker
+
+```bash
+docker compose up
+```
+
+The Compose configuration builds the health checker using the existing Dockerfile and mounts the `logs/` directory from the host into the container.
+
+### Persistent Logs
+
+The log is written inside the container to:
+
+`/logs/health_check.log`
+
+The `logs/` directory is mounted using Docker Compose, so the log is also available on the host:
+
+`logs/health_check.log`
+
+This means the log remains available even after the container is stopped or removed.
+
+### Stop the Container
+
+```bash
+docker compose down
+```
+
 
 ## Dockerfile
 
@@ -208,6 +241,18 @@ This project was built progressively to practice Linux, Bash, and DevOps concept
 - Passing arguments into containers
 - Default and custom Docker arguments
 
+###  Version 5 — Docker Compose
+
+- Docker Compose
+- YAML
+- Compose services
+- `build`
+- Volume mounts
+- Persistent container data
+- Host-to-container filesystem mapping
+- `docker compose up`
+- `docker compose down`
+
 ## Version History
 
 ### V1 — System Health Checker
@@ -228,13 +273,15 @@ Improved the health checker by adding configurable thresholds, argument validati
 
 Updated the Docker configuration to support default and custom arguments using `ENTRYPOINT` and `CMD`.
 
+### V5 — Docker Compose
+
+Added Docker Compose to manage the health checker and configured a volume to persist health-check logs outside the container.
+
 ## Future Improvements
 
 - Add CPU usage monitoring
 - Add more system health checks
 - Improve error reporting
-- Add persistent Docker volumes for logs
-- Add Docker Compose support
 - Automate health checks with scheduled execution
 - Add container health checks
 - Integrate the project into a CI/CD workflow
