@@ -39,6 +39,9 @@ A Bash-based system health checker that monitors basic Linux system health, repo
 
 ```text
 .
+├──.github/
+   └──workflows/
+    └──health_CI.yml 
 ├── health_check.sh
 ├── Dockerfile
 ├── compose.yml
@@ -253,6 +256,18 @@ This project was built progressively to practice Linux, Bash, and DevOps concept
 - `docker compose up`
 - `docker compose down`
 
+### Version 6 — GitHub Actions
+
+- GitHub Actions
+- CI/CD
+- Workflow files
+- YAML
+- GitHub Actions runners
+- `actions/checkout`
+- Automated testing
+- Workflow triggers
+- Exit codes and CI status
+
 ## Version History
 
 ### V1 — System Health Checker
@@ -277,6 +292,11 @@ Updated the Docker configuration to support default and custom arguments using `
 
 Added Docker Compose to manage the health checker and configured a volume to persist health-check logs outside the container.
 
+
+### V6 — GitHub Actions
+
+Added a GitHub Actions workflow that automatically runs the health checker whenever changes are pushed to the repository.
+
 ## Future Improvements
 
 - Add CPU usage monitoring
@@ -284,7 +304,7 @@ Added Docker Compose to manage the health checker and configured a volume to per
 - Improve error reporting
 - Automate health checks with scheduled execution
 - Add container health checks
-- Integrate the project into a CI/CD workflow
+
 
 ## Author
 
